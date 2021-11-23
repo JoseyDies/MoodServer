@@ -5,13 +5,13 @@ const { UniqueConstraintError } = require("sequelize/lib/errors");
 
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
-// let validateSession = require("../middleware/sessionValidate");
+
 let validateAdmin = require("../middleware/adminValidate");
 
+//does the above need swtiched around at all?
 
-
-//SUCCESS in registering new user with or without role field.  
-//SUCCESS in registering new user with admin field.
+//SUCCESS - registering new user with or without role field
+//SUCCESS - registering new user with admin field
 router.post("/register", async (req, res) => {
 
     let { email, password, firstName, lastName, role } = req.body;
@@ -46,8 +46,8 @@ router.post("/register", async (req, res) => {
 
 });
 
-//SUCCESS in logging in regular user
-//SUCCESS in logging in admin user
+//SUCCESS - logging in regular user
+//SUCCESS - logging in admin user
 router.post("/login", async (req, res) => {
 
     let { email, password } = req.body;
@@ -95,22 +95,29 @@ router.post("/login", async (req, res) => {
 
 
 //!ADMIN ACCESS CONTROL
-// ADMIN GET ALL USERS
-//SUCCESS without validateAdmin. Okay - will use ternary for page only seen for admins.
+//SUCCESS - admin get all users 
 router.get('/admin/allusers', validateAdmin, async (req, res) => {
 
     try {
-        const users = await models.UserModel.findAll();
+        const users = await models.UserModel.findAll({
+            include: [
+                {
+                    model: models.MoodModel //, model: models.GoalModel
+                },
+                {
+                    model: models.GoalModel
+                }
+            ]
+        });
         res.status(200).json(users);
     } catch (err) {
         res.status(500).json({ error: err });
     }
 });
 
+//!Admin can update info but user cannot login with new data. Removed password due to encryption complications
 
-//SUCCESS without validateAdmin. Okay - will use ternary for page only seen for admins. 
-//!Admin can update but user cannot login with new data. Why?
-router.put("/admin/updateuserinfo/:id", async (req, res) => {  
+router.put("/admin/updateuserinfo/:id", async (req, res) => {
     const updateUserInfo = {
         email: req.body.email,
         firstName: req.body.firstName,
@@ -134,31 +141,26 @@ router.put("/admin/updateuserinfo/:id", async (req, res) => {
     }
 });
 
-// Admin delete user
-// SUCCESS
-// "not authorized" when logged in as a regular user
-// Will likely need a "get all users" to pass down props for paramater id 
 
-router.delete("/admin/delete/:id", validateAdmin, async(req, res) =>{
+//SUCCESS - admin delete user
+router.delete("/admin/delete/:id", validateAdmin, async (req, res) => {
     const userId = req.params.id;
 
     try {
         const userDeleted = await models.UserModel.destroy({
-            where: {id:userId }
+            where: { id: userId }
         })
         res.status(200).json({
             message: "User deleted",
             userDeleted
         })
 
-    }catch (err) {
+    } catch (err) {
         res.status(500).json({
             message: `Failed to delete user.: ${err}`
         })
     }
 })
-
-
 
 
 module.exports = router;

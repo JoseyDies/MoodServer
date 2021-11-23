@@ -1,8 +1,14 @@
+//WILL NEED TO ADD DATE PROPERTY
 
 const {DataTypes} = require("sequelize");
 const db = require("../db");
 const Mood = db.define("mood", {
-
+    id: {
+        type: DataTypes.UUID,
+        primaryKey: true,
+        defaultValue: DataTypes.UUIDV4,
+        allowNull: false,
+      },
       sleep: {
         type: DataTypes.ENUM("Terrible", "Okay", "Wonderful"),
         allowNull: false,
@@ -24,8 +30,11 @@ const Mood = db.define("mood", {
         type: DataTypes.STRING,
         allowNull: false,
       },
-    }, {
-      tableName: 'mood'
-    });
+    }, 
+    // {
+    //   tableName: 'mood'
+    // }
+    
+    );
 
     module.exports = Mood
