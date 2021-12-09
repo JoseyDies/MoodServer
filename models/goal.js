@@ -17,6 +17,12 @@ const Goals = db.define("goals", {
         type: DataTypes.STRING,
         allowNull: true,
       },
+      // date: {
+        // type: DataTypes.DATEONLY,
+      //   get: function() {
+      //     return moment.utc(this.getDataValue('date')).format('YYYY-MM-DD');
+      //  }
+      // }
 
     });
 

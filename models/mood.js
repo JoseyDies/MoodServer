@@ -29,7 +29,13 @@ const Mood = db.define("mood", {
       moodText: {
         type: DataTypes.STRING,
         allowNull: false,
-      },
+      }
+      // date: {
+      //   type: DataTypes.DATEONLY,
+      //   get: function() {
+      //     return moment.utc(this.getDataValue('date')).format('YYYY-MM-DD');
+      //  }
+      //}
     }, 
     // {
     //   tableName: 'mood'
